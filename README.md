@@ -68,14 +68,14 @@ the easiest resolution was to simply install one of the Visual Studio packages.<
 <br><br>
 * Install PIP <br>
 ```python.exe get-pip.py```
-<br><br>
+<br>
 * Install greenlet
 ```
 python.exe -m pip install greenlet
 python.exe -m easy_install greenlet
 ```
-<br><br>
-* Download gevent wheel.
+<br>
+* Download gevent wheel. <br><br>
 https://pypi.python.org/pypi/gevent - Depository for gevent <br>
 https://pypi.python.org/packages/cp33/g/gevent/gevent-1.1rc2-cp33-none-win32.whl#md5=c5f04681e07c37347652a8470ddc1b8d - Direct Link for Wheel
 
