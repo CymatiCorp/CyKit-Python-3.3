@@ -66,7 +66,7 @@ the easiest resolution was to simply install one of the Visual Studio packages.<
  Download PIP from its website:  https://bootstrap.pypa.io/get-pip.py <br>
   (Place get-pip.py in your Python folder.)
 <br><br>
-* Install PIP 
+* Install PIP <br>
 ```python.exe get-pip.py```
 <br><br>
 * Install greenlet
@@ -87,7 +87,7 @@ Note: I had issues installing gevent 1.1 version of gevent from pip, so I opted 
 ```
 python.exe -m pip install gevent-1.1rc2-cp33-none-win32.whl
 ```
-<br><br>
+<br>
 
 * Install pywinusb
 ```
