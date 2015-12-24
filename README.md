@@ -136,7 +136,7 @@ Contributions by
 * Sharif Olorin  (https://github.com/fractalcat) - hidapi support and project guru
 * Bill Schumacher (https://github.com/bschumacher) - Overhaul of emoKit
 * Bryan Bishop and others in #hplusroadmap on Freenode.
-* Warren - (https://github.com/CymatiCorp/CyKit) Socket server and Python 3.3 port
+* Warren - (https://github.com/CymatiCorp/CyKit-Python-3.3) Socket server and Python 3.3 port
 
 Special Thanks to Gevent/Greenlet members for sorting<br>
 out Python 3.3 support to make this update possible. <br>
