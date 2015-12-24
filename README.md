@@ -66,7 +66,7 @@ the easiest resolution was to simply install one of the Visual Studio packages.<
  Download PIP from its website:  https://bootstrap.pypa.io/get-pip.py <br>
   (Place get-pip.py in your Python folder.)
 <br><br>
-* Install PIP <br>
+* Install PIP <br><br>
 ```python.exe get-pip.py```
 <br><br>
 * Install greenlet
