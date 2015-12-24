@@ -47,8 +47,8 @@ Python 2.7 required you to download ```VC++ Compiler for Python 2.7``` which I<b
 believe used a VC++2008 Compiler. However, Python 3.3.0 makes use of the<br> 
 VC++ 2010 compiler as well as .NET framework. <br><br>
 
-If you do not install a VC++ 2010 Compiler, you will be prompted with the<br>
-following while building gevent:
+If you do not install a VC++ 2010 Compiler, you will be prompted with the following<br>
+while building gevent:
 ```
 Error: Microsoft Visual C++ 10.0 is required (Unable to find vcvarsall.bat)
 ```
@@ -68,7 +68,7 @@ the easiest resolution was to simply install one of the Visual Studio packages.<
 <br><br>
 * Install PIP <br>
 ```python.exe get-pip.py```
-<br>
+<br><br>
 * Install greenlet
 ```
 python.exe -m pip install greenlet
