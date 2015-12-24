@@ -44,18 +44,17 @@ Visual Studio 2015 Community<br>
 https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs#d-community
 
 Python 2.7 required you to download ```VC++ Compiler for Python 2.7``` which I<br>
-believe used a VC++2008 Compiler. However, Python 3.3.0 makes use of the VC++ 2010 compiler<br>
-as well as .NET framework. <br><br>
+believe used a VC++2008 Compiler. However, Python 3.3.0 makes use of the<br> 
+VC++ 2010 compiler as well as .NET framework. <br><br>
 
-VS2010 Runtimes were required during the installation of gevent, so it is<br>
-necessary to install this. If you do not install it, you will be prompted<br>
-with the following while building gevent:
+If you do not install a VC++ 2010 Compiler, you will be prompted with the<br>
+following while building gevent:
 ```
 Error: Microsoft Visual C++ 10.0 is required (Unable to find vcvarsall.bat)
 ```
 
 Advisory:<br>
-There were several alternatives to installing Visaul Studio Express or Community,<br>
+There were several alternatives to installing Visual Studio Express or Community,<br>
 however most of them required a lot of configuring with a lot of unproven methods.<br>
 the easiest resolution was to simply install one of the Visual Studio packages.<br><Br>
 
