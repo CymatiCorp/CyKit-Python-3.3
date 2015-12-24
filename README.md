@@ -10,8 +10,8 @@ Description
 -----------
 CyKit 1.0 (Python 3.3) is an educational tool for Python<br>
 development in Windows to access the raw data stream from the Emotiv <br>
-EPOC headset. Please note, it is preferred that you have a license from <br>
-Emotiv to continue accessing the raw data through CyKit.<br>
+EPOC headset. It is preferred that you have a license from Emotiv<br>
+to continue accessing the raw data through CyKit.<br>
 
 CyKit 1.0 (Python3.3) is an unofficial branch to the OpenYou emoKit, check it out here<br>
  https://github.com/openyou/emokit <br><br>
@@ -37,14 +37,15 @@ Community version, but in theory should work the same.<br>
 
 Visual Studio 2010 Express (ISO)<br>
 http://download.microsoft.com/download/1/E/5/1E5F1C0A-0D5B-426A-A603-1798B951DDAE/VS2010Express1.iso
-<br>or<br>
+<br><br>
+or
+<br><br>
 Visual Studio 2015 Community<br>
 https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs#d-community
 
-<br>
-Visual Studio Express Edition has now been replaced by Visual Studio<br> 
-Community, which is still free for most users, but adds many features<br>
-missing from Express (most notably, support for extensions)<br>
+Python 2.7 required you to download ```VC++ Compiler for Python 2.7``` which I<br>
+believe used a VC++2008 Compiler. However, Python 3.3.0 makes use of the VC++ 2010 compiler<br>
+as well as .NET framework. <br><br>
 
 VS2010 Runtimes were required during the installation of gevent, so it is<br>
 necessary to install this. If you do not install it, you will be prompted<br>
@@ -54,11 +55,9 @@ Error: Microsoft Visual C++ 10.0 is required (Unable to find vcvarsall.bat)
 ```
 
 Advisory:<br>
-There are several workarounds for installing VC++2010, but the most easiest <br>
-resolution was to simply install VC++2010, as every other resolution appears<br>
-to be asking for a headache. Making use of several unadvised workarounds. <br>
-So I stress that you save yourself a lot of grief and install Visual Studio <br>
-Express (or Community).<br>
+There were several alternatives to installing Visaul Studio Express or Community,<br>
+however most of them required a lot of configuring with a lot of unproven methods.<br>
+the easiest resolution was to simply install one of the Visual Studio packages.<br><Br>
 
 * Install pycrypto 2.6 for python 3.3.0
 
@@ -68,21 +67,37 @@ Express (or Community).<br>
  Download PIP from its website:  https://bootstrap.pypa.io/get-pip.py <br>
   (Place get-pip.py in your Python folder.)
 
-Run:
+* Install PIP <br><br>
+```python.exe get-pip.py```
 
-                         python.exe get-pip.py
-                         python.exe -m pip install greenlet
-                         python.exe -m easy_install greenlet
+* Install greenlet
+```
+python.exe -m pip install greenlet
+python.exe -m easy_install greenlet
+```
 
+* Download gevent wheel.
 https://pypi.python.org/pypi/gevent - Depository for gevent <br>
 https://pypi.python.org/packages/cp33/g/gevent/gevent-1.1rc2-cp33-none-win32.whl#md5=c5f04681e07c37347652a8470ddc1b8d - Direct Link for Wheel
 
-Note: I had issues installing a newest version of gevent from pip, so I opted for installing from the wheel. <br>
+Note: I had issues installing gevent 1.1 version of gevent from pip, so I opted for installing from the wheel. <br>
 
-Run:
+* Install gevent
+
 ```
 python.exe -m pip install gevent-1.1rc2-cp33-none-win32.whl
 ```
+<br><br>
+
+* Install pywinusb
+```
+python.exe -m pip install pywinusb
+```
+<br>
+Confirm your versions match the ones listed above.<br><br>
+
+* Download & Extract CyKit-Python3.3 
+https://github.com/CymatiCorp/CyKit-Python-3.3/archive/master.zip
 <br><br>
 Now try streaming.<br>
   ``` Python.exe stream.py localhost 55555 ```
