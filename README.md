@@ -149,6 +149,11 @@ conn.sendall(connbuffer.encode('utf-8'))
 ```
 <br>
 
+Key is encoded in a byte string<br>
+```
+             mykey = ''.join(k)
+             key = str.encode(mykey,'utf-8')
+```
 
 Credits & Original Code
 =======================
