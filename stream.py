@@ -3,7 +3,7 @@
 import socket
 import gevent
 import sys
-sys.path.insert(1, './Python/CyKit/')
+#sys.path.insert(1, './Python/CyKit/')
 import emotiv
 if len(sys.argv) < 3 or len(sys.argv) < 2:
    print("Usage:  Python.exe stream.py IP Port")
@@ -20,17 +20,23 @@ def main():
     except exc as e:
          print(e)
 
-    #gevent.sleep(0.001)
+    gevent.sleep(1)
     try:
        while True: 
              packet = headset.dequeue()
-             connbuffer = ""
 
-             for name in 'AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4'.split(' '):
-              connbuffer +=  str(packet.sensors[name]['value'])  + "."
-             conn.sendall(connbuffer + '\r\n')
              connbuffer = ""
+             gevent.sleep(.001)
+             for name in 'AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4'.split(' '):
+              pass
+              #v = packet.sensors[name]['value']
+              #connbuffer += str(v) + "."
+             connbuffer += "\r\n"
+             #conn.sendall(connbuffer.encode('utf-8'))
+             connbuffer = ""
+             
     except Exception as msg:
+             print("- - @ ", sys.exc_info()[0],  sys.exc_info()[1],  sys.exc_info()[2], " : ",  msg)
              print('Error: ', str(msg))
              conn.close()
              #headset.kill()
@@ -69,12 +75,12 @@ def connectServer():
 
 try:
   headset = emotiv.Emotiv(True, False)
-  gevent.spawn(headset.setup)
+  gevent.spawn(headset.setup_windows)
   main()
 
 except Exception as e:
   exc = e
-  print(e)
+  print(" @ @ @ ", e)
   print("Device Time Out or Disconnect . . .    Reconnect to Server.")
   conn.close()
   main()
