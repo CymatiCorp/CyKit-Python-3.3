@@ -137,7 +137,18 @@ except Exception as e:
 exc = e
 ```  
 <br>
-Removed ``` sleep(0.001) ``` in main loop.<br><br>
+
+get_level has a change in division operators
+```
+Python 2.7 Floor (Rounded) division operator \ is now \\  
+```
+<br>
+Sending a string in the socket buffer, must now be encoded utf-8
+```
+conn.sendall(connbuffer.encode('utf-8'))
+```
+<br>
+
 
 Credits & Original Code
 =======================
