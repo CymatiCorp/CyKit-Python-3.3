@@ -28,16 +28,15 @@ def main():
              connbuffer = ""
              gevent.sleep(.001)
              for name in 'AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4'.split(' '):
-              pass
-              #v = packet.sensors[name]['value']
-              #connbuffer += str(v) + "."
+              
+              v = packet.sensors[name]['value']
+              connbuffer += str(v) + "."
              connbuffer += "\r\n"
-             #conn.sendall(connbuffer.encode('utf-8'))
+             conn.sendall(connbuffer.encode('utf-8'))
              connbuffer = ""
              
     except Exception as msg:
-             print("- - @ ", sys.exc_info()[0],  sys.exc_info()[1],  sys.exc_info()[2], " : ",  msg)
-             print('Error: ', str(msg))
+             print("Streaming Error: ", sys.exc_info()[0],  sys.exc_info()[1],  sys.exc_info()[2], " : ",  msg)
              conn.close()
              #headset.kill()
     finally:
