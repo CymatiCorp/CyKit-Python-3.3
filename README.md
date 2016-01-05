@@ -155,6 +155,37 @@ Key is encoded in a byte string<br>
              key = str.encode(mykey,'utf-8')
 ```
 
+the data packet that is in the gevent 'task' queue must now be
+encoded in latin-1 to make use of the full ascii charmap.
+```
+                task = tasks.get()
+                data_block = bytes(task, encoding='latin-1')
+                mydata = cipher.decrypt(data_block[0:16]) + cipher.decrypt(data_block[16:32])
+                self.packets.put_nowait(EmotivPacket(mydata, self.sensors, self.old_model))
+```
+
+get_level no longer needs to use ord() to convert the byte to its
+character index, in Python 3.3 byte arrays are treated as a list of 
+integers, so the conversion is already done.
+
+```
+def get_level(data, bits):
+    level = 0
+    for i in range(13, -1, -1):
+        level <<= 1
+        b = (bits[i] // 8) + 1  # Must now use // to use Floor division like in python 2.7
+        o = bits[i] % 8
+        level |= (data[b] >> o) & 1
+    return level
+ ```
+ 
+ EmotivPacket no longer uses ord() when getting the counter integer.
+ ```
+             self.counter = data[0]
+ ```
+
+
+
 Credits & Original Code
 =======================
 
