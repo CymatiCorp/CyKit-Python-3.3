@@ -10,6 +10,7 @@ from gevent.queue import Queue
 from subprocess import check_output
 import binascii
 import sys
+import random
 
 sensor_bits = {
     'F3': [10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7],
@@ -30,8 +31,9 @@ sensor_bits = {
 quality_bits = [99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112]
 
 battery_values = {
-    "255": [100], "254": [100], "253": [100],"252": [100],"251": [100],"250": [100],"249": [100],"248": [100],"247": [99],"246": [97],"245": [93],"244": [89],"243": [85],"242": [82],"241": [77],"240": [72],"239": [66],"238": [62],"237": [55],"236": [46],"235": [32],"234": [20],"233": [12],"232": [6],"231": [4],"230": [3],"229": [2],"228": [2],"227": [2],"226": [1],"225": [0],"224": [0]
+    255: [100], 254: [100], 253: [100],252: [100],251: [100],250: [100],249: [100],248: [100],247: [99],246: [97],245: [93],244: [89],243: [85],242: [82],241: [77],240: [72],239: [66],238: [62],237: [55],236: [46],235: [32],234: [20],233: [12],232: [6],231: [4],230: [3],229: [2],228: [2],227: [2],226: [1],225: [0],224: [0]
 }
+
 
 
 g_battery = 0
@@ -41,21 +43,13 @@ tasks = gevent.queue.Queue()
 
 # =========================================== GET_LEVEL
 def get_level(data, bits):
-    try:
-         level = 0
-         #print("Length", len(data))
-         for i in range(13, -1, -1):
-             level <<= 1
-             #print(str(level), " - ", str(i), " - ", str(bits))
-             b = (bits[i] // 8) + 1
-             #print(str(bits[i] // 8))
-             o = bits[i] % 8
-             level |= (data[b] >> o) & 1
-         return level
-    except Exception as e:
-         print("A!", e)
-         pass
-
+    level = 0
+    for i in range(13, -1, -1):
+        level <<= 1
+        b = (bits[i] // 8) + 1
+        o = bits[i] % 8
+        level |= (data[b] >> o) & 1
+    return level
 
 # =========================================== IS_OLD_MODEL
 def is_old_model(serial_number):
@@ -69,28 +63,26 @@ class EmotivPacket(object):
     def __init__(self, data, sensors, model):
         try:
             global g_battery
-            self.counter = ord(data[0:1])
+
+            self.counter = data[0]
             self.raw_data = data
-            #print("A ", str(data),"\n")
-            #print("B ", str(ord(data[0:1])),"\n")
-            
-            
+
             #print(str(self.counter))
             self.battery = g_battery
-            
+
             if self.counter > 127:
                 self.battery = self.counter
-                #g_battery = 100
                 if self.battery > 224:
                      g_battery = battery_values[self.battery]
+                     #g_battery = 100
                      self.counter = 128
-     
+
             self.sync = self.counter == 0xe9
-            self.gyro_x = ord(data[28:29]) - 106
-            self.gyro_y = ord(data[29:30]) - 105
+            self.gyro_x = data[29] - 106
+            self.gyro_y = data[30] - 105
             sensors['X']['value'] = self.gyro_x
             sensors['Y']['value'] = self.gyro_y
-            
+
             for name, bits in list(sensor_bits.items()):
                 #Get Level for sensors subtract 8192 to get signed value
                 value = get_level(self.raw_data, bits) - 8192
@@ -100,17 +92,17 @@ class EmotivPacket(object):
             self.handle_quality(sensors)
             self.sensors = sensors
         except Exception as e:
-             print("! ! !  ", sys.exc_info()[0],  sys.exc_info()[1],  sys.exc_info()[2], " : ",  e)
+             print("EmotivPacket Error ", sys.exc_info()[0],  sys.exc_info()[1],  sys.exc_info()[2], " : ",  e)
 
-    
-    
-    # ================================================== HANDLE_QUALITY            
+
+
+    # ================================================== HANDLE_QUALITY
     def handle_quality(self, sensors):
         if self.old_model:
             current_contact_quality = get_level(self.raw_data, quality_bits) // 540
         else:
             current_contact_quality = get_level(self.raw_data, quality_bits) // 1024
-        sensor = ord(self.raw_data[0:1])
+        sensor = self.raw_data[0]
         if sensor == 0 or sensor == 64:
             sensors['F3']['quality'] = current_contact_quality
         elif sensor == 1 or sensor == 65:
@@ -147,8 +139,8 @@ class EmotivPacket(object):
             sensors['Unknown']['quality'] = current_contact_quality
             sensors['Unknown']['value'] = sensor
         return current_contact_quality
-        
-# ============================================== EMOTIV 
+
+# ============================================== EMOTIV
 class Emotiv(object):
     def __init__(self, display_output=True, serial_number="", is_research=False):
         self.running = True
@@ -177,7 +169,7 @@ class Emotiv(object):
             'Y': {'value': 0, 'quality': 0},
             'Unknown': {'value': 0, 'quality': 0}
         }
-        
+
         self.serial_number = serial_number  # You will need to set this manually for OS X.
         self.old_model = False
 
@@ -185,42 +177,68 @@ class Emotiv(object):
     def setup_windows(self):
         devices = []
         try:
+            devicesUsed = 0
             for device in hid.find_all_hid_devices():
                 print("Product name ",device.product_name)
                 print("device path ", device.device_path)
                 print("instance id ", device.instance_id)
                 print("\r\n")
+                useDevice = ""
                 
                 if device.vendor_id != 0x21A1 and device.vendor_id != 0xED02:
                     continue
                 if device.product_name == 'Brain Waves':
-                    devices.append(device)
-                    device.open()
-                    self.serial_number = device.serial_number
-                    device.set_raw_data_handler(self.handler)
+                    
+                    print("\n", device.product_name, " Found!\n")
+                    useDevice = input("Use this device? [Y]es? ")
+                   
+                    if useDevice.upper() == "Y":                   
+                         devicesUsed += 1             
+                         devices.append(device)
+                         device.open()
+                         self.serial_number = device.serial_number
+                         device.set_raw_data_handler(self.handler)
                 elif device.product_name == 'EPOC BCI':
-                    devices.append(device)
-                    device.open()
-                    self.serial_number = device.serial_number
-                    device.set_raw_data_handler(self.handler)
+                    
+                    print("\n", device.product_name, " Found!\n")
+                    useDevice = input("Use this device? [Y]es? ")
+                    if useDevice.upper() == "Y":                   
+                         devicesUsed += 1
+                         devices.append(device)
+                         device.open()
+                         self.serial_number = device.serial_number
+                         device.set_raw_data_handler(self.handler)
                 elif device.product_name == '00000000000':
-                    devices.append(device)
-                    device.open()
-                    self.serial_number = device.serial_number
-                    device.set_raw_data_handler(self.handler)
+                    
+                    print("\n", device.product_name, " Found!\n")
+                    useDevice = input("Use this device? [Y]es? ")
+
+                    if useDevice.upper() == "Y":
+                         devicesUsed += 1
+                         devices.append(device)
+                         device.open()
+                         self.serial_number = device.serial_number
+                         device.set_raw_data_handler(self.handler)
                 elif device.product_name == 'Emotiv RAW DATA':
-                    devices.append(device)
-                    device.open()
-                    self.serial_number = device.serial_number
-                    device.set_raw_data_handler(self.handler)
+                    
+                    print("\n", device.product_name, " Found!\n")
+                    useDevice = input("Use this device? [Y]es? ")
+
+                    if useDevice.upper() == "Y":
+                         devicesUsed += 1
+                         devices.append(device)
+                         device.open()
+                         self.serial_number = device.serial_number
+                         device.set_raw_data_handler(self.handler)
+                         
+            print("\n\n Devices Selected: ", devicesUsed) 
             crypto = gevent.spawn(self.setup_crypto, self.serial_number)
-            
             console_updater = gevent.spawn(self.update_console)
             input("Press Enter to continue...")
             while self.running:
                 try:
                     gevent.sleep(0)
-                    
+
                 except KeyboardInterrupt:
                     self.running = False
         finally:
@@ -232,16 +250,16 @@ class Emotiv(object):
     # ================================================================ DATA HANDLER
     def handler(self, data):
         assert data[0] == 0
-        tasks.put_nowait(''.join(list(map(chr, data))))
+        tasks.put_nowait(''.join(map(chr, data[1:])))
         self.packets_received += 1
         return True
 
     # ================================================================ SETUP CRYPTO
     def setup_crypto(self, sn):
-  
+
         if is_old_model(sn):
             self.old_model = True
-        #print(self.old_model)
+
         k = ['\0'] * 16
         k[0] = sn[-1]
         k[1] = '\0'
@@ -270,55 +288,20 @@ class Emotiv(object):
         k[13] = '\0'
         k[14] = sn[-4]
         k[15] = 'P'
-        print("\nkey ", len(k))
-        try:
-             mykey = ''.join(k)
-             key = str.encode(mykey,'utf-8')
-             iv = Random.new().read(AES.block_size)
-             cipher = AES.new(key, AES.MODE_ECB)
-        except Exception as e:
-             exc = e
-             print("A: ", e)
-             input("Enter to Continue")
-             pass
-             
-        input("Enter to Continue")
+
+        mykey = ''.join(k)
+        key = str.encode(mykey,'utf-8')
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(key, AES.MODE_ECB)
+
         while self.running:
-            #while tasks.qsize() > 0:
+
             while not tasks.empty():
-                print(str(tasks.qsize()))
                 task = tasks.get()
-                
-                try:
-                    newtask = bytes(task, encoding='utf-8')
-                    
-                    #print(task.decode('cp1251').encode(platform_encoding))
-                    #b = bytes(task[16:],'utf-16')
-                    #c = b.decode('utf-16')            
-                    #print(len(c))
-                    #print(c)
-                    #b.extend(map(ord, task))
-                    #t2 = ''.join(task[:16])
-                    #print("\n Data Len", len(t2))
-                    #print(len(newTask))
-                    #print("\n", len(newTask[:16])," - " , len(newTask[16:]))
-
-                    A = cipher.decrypt(newtask[0:16])
-                    B = cipher.decrypt(newtask[16:32])
-                    print(len(A) , " ", len(B))
-                    #mydata = bytes(data, 'utf-8')
-                    #mydata = A.decode('ascii')
-                    mydata = A + B
-                    
-
-                    #print("X")
-                    self.packets.put_nowait(EmotivPacket(mydata, self.sensors, self.old_model))
-                    #print("Y")
-                    self.packets_processed += 1
-                except Exception as e:
-                     exc = e
-                     print("B! ", e)
-                     pass
+                data_block = bytes(task, encoding='latin-1')
+                mydata = cipher.decrypt(data_block[0:16]) + cipher.decrypt(data_block[16:32])
+                self.packets.put_nowait(EmotivPacket(mydata, self.sensors, self.old_model))
+                self.packets_processed += 1
                 gevent.sleep(0)
             gevent.sleep(0)
 
@@ -326,11 +309,8 @@ class Emotiv(object):
 
     # ====================================================== DEQUEUE
     def dequeue(self):
-        try:
-            return self.packets.get()
-        except Exception as e:
-            exc = e
-            #print("C: ", e)
+        return self.packets.get()
+
     # ====================================================== CLOSE GREENLETS
     def close(self):
         self.running = False
@@ -340,15 +320,14 @@ class Emotiv(object):
             while self.running:
 
                 os.system('cls')
-
-                print(tasks.qsize())
+                print("Data in Queue: ", str(tasks.qsize()))
                 print("Packets Received: ", self.packets_received, "Packets Processed:", self.packets_processed)
                 print('\n'.join("%s Reading: %s Quality: %s" %
                                 (k[1], self.sensors[k[1]]['value'],
                                  self.sensors[k[1]]['quality']) for k in enumerate(self.sensors)))
                 print("Battery: ", g_battery)
                 gevent.sleep(.001)
-        
+
 # ============================================================ __MAIN__
 if __name__ == "__main__":
     a = Emotiv()
