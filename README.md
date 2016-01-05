@@ -184,6 +184,24 @@ def get_level(data, bits):
              self.counter = data[0]
  ```
 
+I converted battery_values to ``` integer: [integer] ``` <br> 
+where previously it was `` "string": [integer] ``` <br>
+i dont think this was necessary, but I thought it was<br>
+simpler this way, as it no longer needs to convert to a string <br>
+plus, i put battery_values on one line to remove clutter. <br><br>
+i also put a conditional, for if self.battery is more than 224<br>
+which would be outside of the battery_values index. <br>
+This is probably not necessary if its decrypting properly, but <br>
+might be good to keep it there just in case.<br><br>
+
+```
+                self.battery = self.counter
+                if self.battery > 224:
+                     g_battery = battery_values[self.battery]
+                     #g_battery = 100
+                     self.counter = 1
+```
+
 
 
 Credits & Original Code
