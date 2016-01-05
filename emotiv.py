@@ -8,9 +8,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 from gevent.queue import Queue
 from subprocess import check_output
-import binascii
 import sys
-import random
 
 sensor_bits = {
     'F3': [10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7],
