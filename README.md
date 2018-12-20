@@ -1,5 +1,6 @@
 CyKit 1.0 Python 3.3 (32-bit) Windows <br>
 =
+<hr />
 Updated Version: 1.0 (2015)
 
 ( Deprecated Version. Relocated to History at https://github.com/CymatiCorp/CyKIT )
